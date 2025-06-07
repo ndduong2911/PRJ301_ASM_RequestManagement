@@ -1,5 +1,7 @@
-﻿-- Tạo bảng Departments
-CREATE TABLE Departments (
+﻿
+
+-- Tạo bảng Divisions
+CREATE TABLE Divisions (
     id INT IDENTITY PRIMARY KEY,
     name NVARCHAR(100) NOT NULL
 );
@@ -11,9 +13,9 @@ CREATE TABLE Users (
     password NVARCHAR(100) NOT NULL,
     full_name NVARCHAR(100) NOT NULL,
     manager_id INT NULL,
-    department_id INT NOT NULL,
+    division_id INT NOT NULL,
     FOREIGN KEY (manager_id) REFERENCES Users(id),
-    FOREIGN KEY (department_id) REFERENCES Departments(id)
+    FOREIGN KEY (division_id) REFERENCES Divisions(id)
 );
 
 -- Tạo bảng Roles
@@ -54,10 +56,10 @@ CREATE TABLE Requests (
     from_date DATE NOT NULL,
     to_date DATE NOT NULL,
     reason NVARCHAR(MAX) NOT NULL,
-    status NVARCHAR(20) CHECK (status IN ('Inprogress', 'Approved', 'Rejected')) NOT NULL DEFAULT 'Inprogress',
+    status NVARCHAR(20) NOT NULL CHECK (status IN ('Inprogress', 'Approved', 'Rejected')) DEFAULT 'Inprogress',
     created_by INT NOT NULL,
     processed_by INT NULL,
-    processed_note NVARCHAR(MAX) NULL,
+    processed_note NVARCHAR(MAX),
     FOREIGN KEY (created_by) REFERENCES Users(id),
     FOREIGN KEY (processed_by) REFERENCES Users(id)
 );
