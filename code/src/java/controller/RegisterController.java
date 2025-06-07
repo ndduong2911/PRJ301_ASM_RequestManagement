@@ -8,11 +8,8 @@ import java.security.MessageDigest;
 import java.sql.Connection;
 import java.util.List;
 
-import dal.UserDAO;
-import dal.DivisionDAO;
-import dal.UserRoleDAO;
-import model.User;
-import model.Division;
+import dal.*;
+import model.*;
 import util.DBContext;
 
 @WebServlet("/register")
@@ -22,11 +19,13 @@ public class RegisterController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try (Connection conn = DBContext.getConnection()) {
             DivisionDAO divisionDAO = new DivisionDAO(conn);
-            List<Division> divisions = divisionDAO.getAllDivisions();
-            List<User> managers = new UserDAO(conn).getAllManagers();
+            RoleDAO roleDAO = new RoleDAO(conn);
+            UserDAO userDAO = new UserDAO(conn);
 
-            req.setAttribute("divisions", divisions);
-            req.setAttribute("managers", managers);
+            req.setAttribute("divisions", divisionDAO.getAllDivisions());
+            req.setAttribute("roles", roleDAO.getAllRoles());
+            req.setAttribute("managers", userDAO.getAllManagers());
+
             req.getRequestDispatcher("register.jsp").forward(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);
@@ -41,27 +40,31 @@ public class RegisterController extends HttpServlet {
             String confirmPassword = req.getParameter("confirmPassword");
             String fullName = req.getParameter("fullName");
             int divisionId = Integer.parseInt(req.getParameter("divisionId"));
+            int roleId = Integer.parseInt(req.getParameter("roleId"));
             String mgrStr = req.getParameter("managerId");
             Integer managerId = (mgrStr == null || mgrStr.isEmpty()) ? null : Integer.parseInt(mgrStr);
 
-            UserDAO dao = new UserDAO(conn);
+            UserDAO userDAO = new UserDAO(conn);
+            RoleDAO roleDAO = new RoleDAO(conn);
 
             if (!rawPassword.equals(confirmPassword)) {
                 req.setAttribute("error", "❌ Mật khẩu xác nhận không khớp.");
-            } else if (dao.getUserByUsername(username) != null) {
+            } else if (userDAO.getUserByUsername(username) != null) {
                 req.setAttribute("error", "⚠️ Tên đăng nhập đã tồn tại.");
+            } else if (roleDAO.roleNameById(roleId).equalsIgnoreCase("Division Leader")
+                    && userDAO.hasDivisionLeader(divisionId)) {
+                req.setAttribute("error", "❌ Phòng ban này đã có Division Leader.");
             } else {
                 String password = hashPassword(rawPassword);
                 User user = new User(0, username, password, fullName, divisionId, managerId);
-                int userId = dao.registerUserReturnId(user);
-                new UserRoleDAO(conn).assignRoleToUser(userId, 3); // Role 3 = Nhân viên
+                int userId = userDAO.registerUserReturnId(user);
+                new UserRoleDAO(conn).assignRoleToUser(userId, roleId);
                 req.setAttribute("success", "✅ Đăng ký thành công! Bạn có thể đăng nhập.");
             }
 
-            // Gửi lại dữ liệu để reload form
-            DivisionDAO divisionDAO = new DivisionDAO(conn);
-            req.setAttribute("divisions", divisionDAO.getAllDivisions());
-            req.setAttribute("managers", new UserDAO(conn).getAllManagers());
+            req.setAttribute("divisions", new DivisionDAO(conn).getAllDivisions());
+            req.setAttribute("roles", new RoleDAO(conn).getAllRoles());
+            req.setAttribute("managers", userDAO.getAllManagers());
             req.getRequestDispatcher("register.jsp").forward(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);

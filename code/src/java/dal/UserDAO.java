@@ -106,4 +106,19 @@ public class UserDAO {
         }
         return -1;
     }
+
+    public boolean hasDivisionLeader(int divisionId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Users u "
+                + "JOIN UserRole ur ON u.id = ur.user_id "
+                + "JOIN Roles r ON ur.role_id = r.id "
+                + "WHERE r.name = N'Division Leader' AND u.division_id = ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, divisionId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+        return false;
+    }
+
 }

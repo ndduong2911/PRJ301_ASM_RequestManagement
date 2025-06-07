@@ -21,7 +21,7 @@ public class LoginController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String username = req.getParameter("username");
         String rawPassword = req.getParameter("password");
-        String hashedPassword = hashPassword(rawPassword); // mã hóa password
+        String hashedPassword = hashPassword(rawPassword);
 
         try (Connection conn = DBContext.getConnection()) {
             UserDAO userDAO = new UserDAO(conn);
@@ -33,7 +33,7 @@ public class LoginController extends HttpServlet {
 
                 RoleDAO roleDAO = new RoleDAO(conn);
                 List<Role> roles = roleDAO.getRolesByUserId(user.getId());
-                session.setAttribute("roles", roles);
+                session.setAttribute("roles", roles); // ✅ lưu đúng kiểu List<Role>
 
                 resp.sendRedirect("index.jsp");
             } else {

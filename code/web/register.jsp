@@ -1,5 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="java.util.*, model.Division, model.User"%>
+<%@page import="java.util.*, model.Division, model.User, model.Role"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,7 +12,6 @@
         Tên đăng nhập: <input type="text" name="username" required /><br/><br/>
         Mật khẩu: <input type="password" name="password" required /><br/><br/>
         Xác nhận mật khẩu: <input type="password" name="confirmPassword" required /><br/><br/>
-
         Họ tên: <input type="text" name="fullName" required /><br/><br/>
 
         Phòng ban:
@@ -25,6 +24,29 @@
             %>
                 <option value="<%= d.getId() %>"><%= d.getName() %></option>
             <%
+                    }
+                }
+            %>
+        </select><br/><br/>
+
+        Vai trò:
+        <select name="roleId" required>
+            <option value="">-- Chọn vai trò --</option>
+            <%
+                List<Role> roles = (List<Role>) request.getAttribute("roles");
+                Set<Integer> divisionLeaderDivisions = (Set<Integer>) request.getAttribute("divisionsWithLeader");
+
+                if (roles != null) {
+                    for (Role r : roles) {
+                        if ("Division Leader".equalsIgnoreCase(r.getName()) && divisionLeaderDivisions != null) {
+            %>
+                <option value="<%= r.getId() %>" disabled>Division Leader (đã có)</option>
+            <%
+                        } else {
+            %>
+                <option value="<%= r.getId() %>"><%= r.getName() %></option>
+            <%
+                        }
                     }
                 }
             %>
