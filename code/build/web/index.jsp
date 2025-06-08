@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="model.User, model.Role, java.util.List" %>
+<%@ page import="model.User, model.Role, model.Request, java.util.List" %>
 <%
     User user = (User) session.getAttribute("user");
     List<Role> roles = (List<Role>) session.getAttribute("roles");
@@ -7,79 +7,120 @@
         response.sendRedirect("login.jsp");
         return;
     }
+    String activeFeature = request.getParameter("feature");
+
+    // Lấy thông báo thành công/thất bại từ session rồi xóa ngay sau khi lấy
+    String success = (String) session.getAttribute("success");
+    String error = (String) session.getAttribute("error");
+    session.removeAttribute("success");
+    session.removeAttribute("error");
+
+    List<Request> myRequests = (List<Request>) session.getAttribute("myRequests");
+    session.removeAttribute("myRequests");
 %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Trang chính</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <title>Trang chính - Request System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
     <style>
         body { font-family: Arial; }
-        .content { padding: 40px; }
+        .sidebar { height: 100vh; background-color: #007bff; color: white; padding: 20px; }
+        .sidebar a { color: white; text-decoration: none; display: block; padding: 8px 10px; border-radius: 4px; }
+        .sidebar a.active { background-color: aqua; color: black; }
+        .content { padding: 30px; }
     </style>
 </head>
-<body>
+<body class="d-flex">
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold text-success" href="#">RequestSystem</a>
-        <div class="collapse navbar-collapse justify-content-end">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <span class="nav-link">Xin chào, <strong><%= user.getFullName() %></strong></span>
-                </li>
-                <li class="nav-item">
-                    <form action="logout" method="post" class="d-inline">
-                        <button class="btn btn-outline-danger btn-sm" type="submit">Đăng xuất</button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<!-- Nội dung -->
-<div class="container content">
-    <h3>Thông tin tài khoản</h3>
-    <p><strong>Username:</strong> <%= user.getUsername() %></p>
-
-    <h4>Vai trò:</h4>
+<!-- Sidebar -->
+<div class="sidebar">
+    <h5>👤 <%= user.getFullName() %></h5>
+    <hr/>
+    <p><strong>Vai trò:</strong></p>
     <ul>
         <% for (Role r : roles) { %>
             <li><%= r.getName() %></li>
         <% } %>
     </ul>
+    <hr/>
+    <a href="<%= request.getContextPath() %>/index.jsp?feature=create" class="<%= "create".equals(activeFeature) ? "active" : "" %>">📝 Tạo đơn nghỉ phép</a>
+    <a href="request/list" class="<%= "list".equals(activeFeature) ? "active" : "" %>">📄 Xem đơn của tôi</a>
+</div>
 
-    <h4>Chức năng:</h4>
-    <ul>
-        <li><a href="request/create">Tạo đơn nghỉ phép</a></li>
-        <li><a href="request/list">Xem đơn của tôi</a></li>
+<!-- Nội dung -->
+<div class="flex-grow-1">
+    <nav class="d-flex justify-content-end p-3">
+        <form action="logout" method="post">
+            <button class="btn btn-outline-danger btn-sm">Đăng xuất</button>
+        </form>
+    </nav>
 
-        <%-- Nếu là Trưởng nhóm hoặc Trưởng phòng thì được phép duyệt đơn --%>
-        <%
-            for (Role r : roles) {
-                if (r.getName().equalsIgnoreCase("Trưởng nhóm") || r.getName().equalsIgnoreCase("Division Leader")) {
-        %>
-            <li><a href="request/review">Xét duyệt đơn</a></li>
-        <%
-                    break;
-                }
-            }
-        %>
+    <div class="container content">
 
-        <%-- Nếu là Division Leader thì được xem agenda --%>
-        <%
-            for (Role r : roles) {
-                if (r.getName().equalsIgnoreCase("Division Leader")) {
-        %>
-            <li><a href="agenda">Xem Agenda</a></li>
-        <%
-                    break;
-                }
-            }
-        %>
-    </ul>
+        <% if ("list".equals(activeFeature)) { %>
+            <h3>Danh sách đơn nghỉ phép</h3>
+            <% if (myRequests == null || myRequests.isEmpty()) { %>
+                <div class="alert alert-info">Bạn chưa có đơn nghỉ phép nào.</div>
+            <% } else { %>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Tiêu đề</th>
+                            <th>Từ ngày</th>
+                            <th>Đến ngày</th>
+                            <th>Lý do</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (Request r : myRequests) { %>
+                            <tr>
+                                <td><%= r.getTitle() %></td>
+                                <td><%= r.getFromDate() %></td>
+                                <td><%= r.getToDate() %></td>
+                                <td><%= r.getReason() %></td>
+                                <td><%= r.getStatus() %></td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            <% } %>
+        <% } else { %>
+            <!-- Tạo đơn nghỉ -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4>Tạo đơn xin nghỉ phép</h4>
+                </div>
+                <div class="card-body">
+                    <% if (error != null) { %>
+                        <div class="alert alert-danger"><%= error %></div>
+                    <% } else if (success != null) { %>
+                        <div class="alert alert-success"><%= success %></div>
+                    <% } %>
+
+                    <form action="request/create" method="post">
+                        <div class="mb-3">
+                            <label for="fromDate" class="form-label">Từ ngày:</label>
+                            <input type="date" class="form-control" id="fromDate" name="fromDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="toDate" class="form-label">Đến ngày:</label>
+                            <input type="date" class="form-control" id="toDate" name="toDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Lý do:</label>
+                            <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Gửi đơn</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center text-muted">
+                    PRJ301 Leave System
+                </div>
+            </div>
+        <% } %>
+    </div>
 </div>
 
 </body>

@@ -13,14 +13,24 @@ import util.DBContext;
 
 @WebServlet("/request/list")
 public class RequestListController extends HttpServlet {
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user = (User) req.getSession().getAttribute("user");
-        if (user == null) { resp.sendRedirect("login.jsp"); return; }
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            resp.sendRedirect(req.getContextPath() + "/login.jsp");
+            return;
+        }
 
         try (Connection conn = DBContext.getConnection()) {
-            List<Request> requests = new RequestDAO(conn).getRequestsByUser(user.getId());
-            req.setAttribute("requests", requests);
-            req.getRequestDispatcher("requestList.jsp").forward(req, resp);
+            RequestDAO dao = new RequestDAO(conn);
+            List<Request> list = dao.getRequestsByUser(user.getId());
+
+            session.setAttribute("myRequests", list);
+            req.getRequestDispatcher("/index.jsp?feature=list").forward(req, resp);
+
         } catch (Exception e) {
             throw new ServletException(e);
         }

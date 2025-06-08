@@ -4,12 +4,14 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/PRJ301-ASM/code/src/java/controller/LoginController.java</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/model/Role.java</file>
             <file>file:/D:/PRJ301-ASM/code/web/requestList.jsp</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/model/RoleFeature.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/model/Division.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/model/Feature.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/dal/UserDAO.java</file>
             <file>file:/D:/PRJ301-ASM/code/web/reviewRequest.jsp</file>
+            <file>file:/D:/PRJ301-ASM/code/web/editRequest.jsp</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/dal/UserRoleDAO.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/util/DBContext.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/controller/CreateRequestController.java</file>
@@ -23,8 +25,10 @@
             <file>file:/D:/PRJ301-ASM/code/src/java/model/User.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/model/UserRole.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/model/Request.java</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/controller/LogoutController.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/controller/ReviewRequestController.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/dal/RequestDAO.java</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/controller/EditRequestController.java</file>
             <file>file:/D:/PRJ301-ASM/code/web/login.jsp</file>
             <file>file:/D:/PRJ301-ASM/code/web/index.jsp</file>
             <file>file:/D:/PRJ301-ASM/code/web/index.html</file>
