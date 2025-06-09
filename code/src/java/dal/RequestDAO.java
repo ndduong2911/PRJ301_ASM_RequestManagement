@@ -89,15 +89,15 @@ public class RequestDAO {
         return null;
     }
 
-    public void updateRequest(Request r) throws SQLException {
-        String sql = "UPDATE Requests SET title = ?, from_date = ?, to_date = ?, reason = ? WHERE id = ?";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, r.getTitle());
-        ps.setDate(2, r.getFromDate());
-        ps.setDate(3, r.getToDate());
-        ps.setString(4, r.getReason());
-        ps.setInt(5, r.getId());
-        ps.executeUpdate();
+    public void updateRequest(int id, java.sql.Date from, java.sql.Date to, String reason) throws SQLException {
+        String sql = "UPDATE Requests SET from_date = ?, to_date = ?, reason = ? WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, from);
+            ps.setDate(2, to);
+            ps.setString(3, reason);
+            ps.setInt(4, id);
+            ps.executeUpdate();
+        }
     }
 
     public void updateStatus(int requestId, String status, String note, int processedBy) throws SQLException {
@@ -132,6 +132,13 @@ public class RequestDAO {
             }
         }
     }
-    
-    
+
+    public void deleteRequest(int id) throws SQLException {
+        String sql = "DELETE FROM Requests WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
+    }
+
 }
