@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 
 import dal.*;
 import model.*;
@@ -21,10 +22,14 @@ public class RegisterController extends HttpServlet {
             DivisionDAO divisionDAO = new DivisionDAO(conn);
             RoleDAO roleDAO = new RoleDAO(conn);
             UserDAO userDAO = new UserDAO(conn);
+            UserRoleDAO userRoleDAO = new UserRoleDAO(conn);
 
             req.setAttribute("divisions", divisionDAO.getAllDivisions());
             req.setAttribute("roles", roleDAO.getAllRoles());
-            req.setAttribute("managers", userDAO.getAllManagers());
+            List<User> managers = userDAO.getAllManagersWithRoleAndDivision();
+            req.setAttribute("managers", managers);
+
+            req.setAttribute("managerRoles", userRoleDAO.getUserRoleNamesMap());
 
             req.getRequestDispatcher("register.jsp").forward(req, resp);
         } catch (Exception e) {
@@ -64,7 +69,10 @@ public class RegisterController extends HttpServlet {
 
             req.setAttribute("divisions", new DivisionDAO(conn).getAllDivisions());
             req.setAttribute("roles", new RoleDAO(conn).getAllRoles());
-            req.setAttribute("managers", userDAO.getAllManagers());
+            req.setAttribute("managers", userDAO.getAllManagersWithRoleAndDivision());
+            req.setAttribute("managerRoles", new UserRoleDAO(conn).getUserRoleNamesMap());
+            Map<Integer, String> managerRoles = userDAO.getAllManagerRoles();
+            req.setAttribute("managerRoles", managerRoles);
             req.getRequestDispatcher("register.jsp").forward(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);

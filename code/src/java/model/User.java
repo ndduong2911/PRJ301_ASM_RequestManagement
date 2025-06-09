@@ -1,12 +1,23 @@
 package model;
 
 public class User {
+
     private int id;
     private String username;
     private String password;
     private String fullName;
     private int divisionId;
     private Integer managerId;
+    private String roleName;
+
+    public String getDivisionName() {
+        return divisionName;
+    }
+
+    public void setDivisionName(String divisionName) {
+        this.divisionName = divisionName;
+    }
+    private String divisionName;
 
     public User() {
     }
@@ -21,7 +32,6 @@ public class User {
     }
 
     // Getters & setters
-
     public int getId() {
         return id;
     }
@@ -68,5 +78,13 @@ public class User {
 
     public void setManagerId(Integer managerId) {
         this.managerId = managerId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 }

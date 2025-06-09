@@ -21,4 +21,17 @@ public class DivisionDAO {
         }
         return list;
     }
+    
+    public Division getDivisionById(int id) throws SQLException {
+        String sql = "SELECT id, name FROM Divisions WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Division(rs.getInt("id"), rs.getString("name"));
+                }
+            }
+        }
+        return null;
+    }
 }

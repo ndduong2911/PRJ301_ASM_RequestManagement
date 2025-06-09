@@ -9,7 +9,6 @@
     }
     String activeFeature = request.getParameter("feature");
 
-    // Lấy thông báo thành công/thất bại từ session
     String success = (String) session.getAttribute("success");
     String error = (String) session.getAttribute("error");
     session.removeAttribute("success");
@@ -17,6 +16,13 @@
 
     List<Request> myRequests = (List<Request>) session.getAttribute("myRequests");
     session.removeAttribute("myRequests");
+
+    boolean isLeader = false;
+    boolean isManager = false;
+    for (Role r : roles) {
+        if ("Trưởng nhóm".equalsIgnoreCase(r.getName())) isLeader = true;
+        if ("Division Leader".equalsIgnoreCase(r.getName())) isManager = true;
+    }
 %>
 <!DOCTYPE html>
 <html>
@@ -49,7 +55,6 @@
         }
     </style>
 </head>
-
 <body class="d-flex">
 
 <!-- Sidebar -->
@@ -59,18 +64,27 @@
     <p><strong>Vai trò:</strong></p>
     <ul>
         <% for (Role r : roles) { %>
-            <li><%= r.getName() %></li>
+        <li><%= r.getName() %></li>
         <% } %>
     </ul>
     <hr/>
     <a href="<%= request.getContextPath() %>/index.jsp?feature=create" class="<%= "create".equals(activeFeature) ? "active" : "" %>">📝 Tạo đơn nghỉ phép</a>
     <a href="request/list" class="<%= "list".equals(activeFeature) ? "active" : "" %>">📄 Xem đơn của tôi</a>
+    
+    <% if (isLeader || isManager) { %>
+    <a href="request/approve" class="<%= "approve".equals(activeFeature) ? "active" : "" %>">📥 Xét duyệt đơn cấp dưới</a>
+    <a href="request/processed" class="<%= "processed".equals(activeFeature) ? "active" : "" %>">📁 Đơn đã xử lý</a>
+    <% } %>
+
+    <% if (isManager) { %>
+    <a href="agenda" class="<%= "agenda".equals(activeFeature) ? "active" : "" %>">📊 Agenda phòng</a>
+    <% } %>
 </div>
 
-<!-- Nội dung -->
+<!-- Content -->
 <div class="flex-grow-1">
     <nav class="d-flex justify-content-end p-3">
-        <form action="logout" method="post">
+        <form action="<%= request.getContextPath() %>/logout" method="post">
             <button class="btn btn-outline-danger btn-sm">Đăng xuất</button>
         </form>
     </nav>
@@ -84,29 +98,29 @@
             <% } else { %>
                 <table class="table table-bordered table-striped">
                     <thead>
-                    <tr>
-                        <th>Tiêu đề</th>
-                        <th>Từ ngày</th>
-                        <th>Đến ngày</th>
-                        <th>Lý do</th>
-                        <th>Trạng thái</th>
-                    </tr>
+                        <tr>
+                            <th>Tiêu đề</th>
+                            <th>Từ ngày</th>
+                            <th>Đến ngày</th>
+                            <th>Lý do</th>
+                            <th>Trạng thái</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <% for (Request r : myRequests) { %>
-                        <tr>
-                            <td><%= r.getTitle() %></td>
-                            <td><%= r.getFromDate() %></td>
-                            <td><%= r.getToDate() %></td>
-                            <td><%= r.getReason() %></td>
-                            <td>
-                                <%= r.getStatus() %>
-                                <% if ("Inprogress".equalsIgnoreCase(r.getStatus())) { %>
-                                    <a href="<%= request.getContextPath() + "/request/edit?id=" + r.getId() %>" class="btn btn-sm btn-warning">Sửa</a>
-                                <% } %>
-                            </td>
-                        </tr>
-                    <% } %>
+                        <% for (Request r : myRequests) { %>
+                            <tr>
+                                <td><%= r.getTitle() %></td>
+                                <td><%= r.getFromDate() %></td>
+                                <td><%= r.getToDate() %></td>
+                                <td><%= r.getReason() %></td>
+                                <td>
+                                    <%= r.getStatus() %>
+                                    <% if ("Inprogress".equalsIgnoreCase(r.getStatus())) { %>
+                                        <a href="<%= request.getContextPath() + "/request/edit?id=" + r.getId() %>" class="btn btn-sm btn-warning">Sửa</a>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% } %>
                     </tbody>
                 </table>
             <% } %>
@@ -116,11 +130,16 @@
                 <div class="card-header bg-primary text-white text-center">
                     <h4>Tạo đơn xin nghỉ phép</h4>
                 </div>
+                <div class="text-black small mt-2 text-center">
+                    User: <%= user.getFullName() %>, 
+                    Role: <%= roles.size() > 0 ? roles.get(0).getName() : "Không rõ" %>, 
+                    Dep: <%= user.getDivisionName() != null ? user.getDivisionName() : "Không rõ" %>
+                </div>
                 <div class="card-body">
                     <% if (error != null) { %>
-                        <div class="alert alert-danger"><%= error %></div>
+                    <div class="alert alert-danger"><%= error %></div>
                     <% } else if (success != null) { %>
-                        <div class="alert alert-success"><%= success %></div>
+                    <div class="alert alert-success"><%= success %></div>
                     <% } %>
 
                     <form action="request/create" method="post">
@@ -147,7 +166,7 @@
     </div>
 </div>
 
-<!-- Toast chỉ hiển thị khi feature=list (tức sau khi sửa đơn) -->
+<!-- Toast -->
 <% if ("list".equals(activeFeature)) { %>
     <% if (success != null) { %>
         <div class="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-4 shadow" role="alert" style="z-index: 9999;">

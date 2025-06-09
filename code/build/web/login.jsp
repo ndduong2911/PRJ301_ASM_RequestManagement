@@ -3,88 +3,57 @@
 <html>
 <head>
     <title>Đăng nhập</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: url('https://source.unsplash.com/1600x900/?nature,water') no-repeat center center fixed;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             background-size: cover;
             font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin: 0;
-            padding: 0;
         }
-
-        .login-container {
+        .login-card {
             background-color: rgba(255, 255, 255, 0.95);
-            width: 320px;
-            margin: 100px auto;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px #aaa;
-            text-align: center;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        input[type="text"], input[type="password"] {
-            width: 90%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        input[type="submit"] {
-            width: 95%;
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-
-        .error {
-            color: red;
-            margin-top: 10px;
-        }
-
-        .register-link {
-            margin-top: 15px;
-            display: block;
-            font-size: 13px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
     </style>
 </head>
 <body>
 
-<div class="login-container">
-    <h2>Đăng nhập</h2>
+<div class="login-card">
+    <h3 class="text-center mb-4">Đăng nhập</h3>
+
+    <% if ("1".equals(request.getParameter("error"))) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ❌ Tên đăng nhập hoặc mật khẩu sai.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
 
     <form action="login" method="post">
-        <input type="text" name="username" placeholder="Tên đăng nhập" required />
-        <input type="password" name="password" placeholder="Mật khẩu" required />
-        <input type="submit" value="Đăng nhập" />
+        <div class="mb-3">
+            <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required>
+        </div>
+        <div class="mb-3">
+            <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required>
+        </div>
+        <div class="d-grid">
+            <input type="submit" class="btn btn-primary" value="Đăng nhập">
+        </div>
     </form>
 
-    <%
-        String error = request.getParameter("error");
-        if ("1".equals(error)) {
-    %>
-        <p class="error">❌ Tên đăng nhập hoặc mật khẩu sai.</p>
-    <%
-        }
-    %>
-
-    <a class="register-link" href="register">Chưa có tài khoản? Đăng ký</a>
+    <div class="text-center mt-3">
+        <a href="register">Chưa có tài khoản? Đăng ký ngay</a>
+    </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
