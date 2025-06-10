@@ -18,6 +18,24 @@ public class Request {
     private String createdByName;
     private String processedByName;
     private Integer managerId;
+    private String creatorName;
+    private String divisionName;
+
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
+    }
+
+    public String getDivisionName() {
+        return divisionName;
+    }
+
+    public void setDivisionName(String divisionName) {
+        this.divisionName = divisionName;
+    }
 
     public Request() {
     }
@@ -148,8 +166,8 @@ public class Request {
 
         return r;
     }
-    
+
     public boolean isManagedBy(int managerId) {
-    return this.managerId != null && this.managerId == managerId;
-}
+        return this.managerId != null && this.managerId == managerId;
+    }
 }

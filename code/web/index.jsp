@@ -16,6 +16,10 @@
 
     List<Request> myRequests = (List<Request>) session.getAttribute("myRequests");
     session.removeAttribute("myRequests");
+    
+    
+    List<Request> subordinateRequests = (List<Request>) session.getAttribute("subordinateRequests");
+    session.removeAttribute("subordinateRequests");
 
     boolean isLeader = false;
     boolean isManager = false;
@@ -69,11 +73,11 @@
     </ul>
     <hr/>
     <a href="<%= request.getContextPath() %>/index.jsp?feature=create" class="<%= "create".equals(activeFeature) ? "active" : "" %>">📝 Tạo đơn nghỉ phép</a>
-    <a href="request/list" class="<%= "list".equals(activeFeature) ? "active" : "" %>">📄 Xem đơn của tôi</a>
+    <a href="<%= request.getContextPath() %>/request/list" class="<%= "list".equals(activeFeature) ? "active" : "" %>">📄 Xem đơn của tôi</a>
     
     <% if (isLeader || isManager) { %>
-    <a href="request/approve" class="<%= "approve".equals(activeFeature) ? "active" : "" %>">📥 Xét duyệt đơn cấp dưới</a>
-    <a href="request/processed" class="<%= "processed".equals(activeFeature) ? "active" : "" %>">📁 Đơn đã xử lý</a>
+    <a href="<%= request.getContextPath() %>/request/approve" class="<%= "approve".equals(activeFeature) ? "active" : "" %>">📥 Xét duyệt đơn cấp dưới</a>
+  
     <% } %>
 
     <% if (isManager) { %>
@@ -124,6 +128,53 @@
                     </tbody>
                 </table>
             <% } %>
+            
+            
+            
+        <% } else if ("approve".equals(activeFeature)) { %>
+            <h3>Danh sách các đơn xin nghỉ của cấp dưới </h3>
+            <% if (subordinateRequests == null || subordinateRequests.isEmpty()) { %>
+                <div class="alert alert-info">Không có đơn nào cần xét duyệt.</div>
+            <% } else { %>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Tiêu đề</th>
+                            <th>Từ ngày</th>
+                            <th>Đến ngày</th>
+                            <th>Người tạo</th>
+                            <th>Phòng ban</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (Request r : subordinateRequests) { %>
+                            <tr>
+                                <td>
+                                    <a href="reviewRequest.jsp?id=<%= r.getId() %>"><%= r.getTitle() %></a>
+                                </td>
+                                <td><%= r.getFromDate() %></td>
+                                <td><%= r.getToDate() %></td>
+                                <td><%= r.getCreatorName() %></td>
+                                <td><%= r.getDivisionName() %></td>
+                                <td>
+                                    <% String status = r.getStatus(); %>
+                                    <% if ("Inprogress".equalsIgnoreCase(status)) { %>
+                                    <span class="badge bg-warning text-dark">Inprogress</span>
+                                    <% } else if ("Approved".equalsIgnoreCase(status)) { %>
+                                    <span class="badge bg-success">Approved</span>
+                                    <% } else if ("Rejected".equalsIgnoreCase(status)) { %>
+                                    <span class="badge bg-danger">Rejected</span>
+                                    <% } else { %>
+                                    <span class="badge bg-secondary"><%= status %></span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            <% } %>
+            
         <% } else { %>
             <!-- Tạo đơn nghỉ -->
             <div class="card shadow">

@@ -122,20 +122,22 @@ public class UserDAO {
     }
 
     public Map<Integer, String> getAllManagerRoles() throws SQLException {
-        String sql = "SELECT u.id, r.name FROM Users u "
-                + "JOIN UserRole ur ON u.id = ur.userId "
-                + "JOIN Roles r ON ur.roleId = r.id";
-        Map<Integer, String> result = new HashMap<>();
-        try (PreparedStatement st = conn.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
+        Map<Integer, String> map = new HashMap<>();
+        String sql = """
+        SELECT ur.user_id, r.name 
+        FROM UserRole ur 
+        JOIN Roles r ON ur.role_id = r.id
+    """;
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                result.put(rs.getInt("id"), rs.getString("name"));
+                map.put(rs.getInt("user_id"), rs.getString("name"));
             }
         }
-        return result;
+        return map;
     }
-    
+
     public List<User> getAllManagersWithRoleAndDivision() throws SQLException {
-    String sql = """
+        String sql = """
         SELECT u.id, u.full_name, r.name AS role_name, d.name AS division_name
         FROM Users u
         JOIN UserRole ur ON u.id = ur.user_id
@@ -143,18 +145,17 @@ public class UserDAO {
         JOIN Divisions d ON u.division_id = d.id
         WHERE r.name != 'Nhân viên'
         """;
-    List<User> list = new ArrayList<>();
-    try (PreparedStatement ps = conn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
-        while (rs.next()) {
-            User u = new User();
-            u.setId(rs.getInt("id"));
-            u.setFullName(rs.getString("full_name"));
-            u.setRoleName(rs.getString("role_name"));
-            u.setDivisionName(rs.getString("division_name"));
-            list.add(u);
+        List<User> list = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                User u = new User();
+                u.setId(rs.getInt("id"));
+                u.setFullName(rs.getString("full_name"));
+                u.setRoleName(rs.getString("role_name"));
+                u.setDivisionName(rs.getString("division_name"));
+                list.add(u);
+            }
         }
+        return list;
     }
-    return list;
-}
 }

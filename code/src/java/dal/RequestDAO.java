@@ -45,20 +45,27 @@ public class RequestDAO {
     }
 
     public List<Request> getRequestsByManagedUsers(int managerId) throws SQLException {
-        String sql = "SELECT r.*, u.full_name as creatorName, p.full_name as processorName, u.manager_id "
+        String sql = "SELECT r.*, u.full_name as creatorName, p.full_name as processorName, u.manager_id, d.name as divisionName "
                 + "FROM Requests r "
                 + "JOIN Users u ON r.created_by = u.id "
                 + "LEFT JOIN Users p ON r.processed_by = p.id "
-                + "WHERE u.manager_id = ?";
+                + "JOIN Divisions d ON u.division_id = d.id "
+                + "WHERE u.manager_id = ? AND r.status = 'Inprogress'";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, managerId);
         ResultSet rs = ps.executeQuery();
         List<Request> list = new ArrayList<>();
         while (rs.next()) {
-            Request r = fromResultSet(rs);
-            r.setCreatedByName(rs.getString("creatorName"));
+            Request r = new Request();
+            r.setId(rs.getInt("id"));
+            r.setTitle(rs.getString("title"));
+            r.setFromDate(rs.getDate("from_date"));
+            r.setToDate(rs.getDate("to_date"));
+            r.setReason(rs.getString("reason"));
+            r.setStatus(rs.getString("status"));
+            r.setCreatorName(rs.getString("creatorName"));
             r.setProcessedByName(rs.getString("processorName"));
-            r.setManagerId(rs.getObject("manager_id") != null ? rs.getInt("manager_id") : null);
+            r.setDivisionName(rs.getString("divisionName"));
             list.add(r);
         }
         return list;
@@ -141,4 +148,64 @@ public class RequestDAO {
         }
     }
 
+    // Truyền thêm cả divisionId và isManager để phân biệt quyền
+public List<Request> getRequestsOfSubordinates(int managerId, int divisionId, boolean isManager) throws SQLException {
+    String sql;
+
+    if (isManager) {
+        // Division Leader: xem toàn bộ đơn của division mình
+        sql = """
+            SELECT r.*, u.full_name AS creator_name, d.name AS division_name
+            FROM Requests r
+            JOIN Users u ON r.created_by = u.id
+            JOIN Divisions d ON u.division_id = d.id
+            WHERE u.division_id = ? 
+        """;
+    } else {
+        // Trưởng nhóm: xem đơn của nhân viên cấp dưới
+        sql = """
+            SELECT r.*, u.full_name AS creator_name, d.name AS division_name
+            FROM Requests r
+            JOIN Users u ON r.created_by = u.id
+            JOIN Divisions d ON u.division_id = d.id
+            WHERE u.manager_id = ? 
+        """;
+    }
+
+    List<Request> list = new ArrayList<>();
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        if (isManager) {
+            ps.setInt(1, divisionId);
+        } else {
+            ps.setInt(1, managerId);
+        }
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Request r = new Request();
+                r.setId(rs.getInt("id"));
+                r.setTitle(rs.getString("title"));
+                r.setFromDate(rs.getDate("from_date"));
+                r.setToDate(rs.getDate("to_date"));
+                r.setReason(rs.getString("reason"));
+                r.setStatus(rs.getString("status"));
+                r.setCreatorName(rs.getString("creator_name"));
+                r.setDivisionName(rs.getString("division_name"));
+                list.add(r);
+            }
+        }
+    }
+    return list;
+}
+
+// Cập nhật trạng thái đơn
+    public boolean updateStatus(int requestId, String newStatus, int processedById) throws SQLException {
+        String sql = "UPDATE Requests SET status = ?, processed_by = ? WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newStatus);
+            ps.setInt(2, processedById);
+            ps.setInt(3, requestId);
+            return ps.executeUpdate() > 0;
+        }
+    }
 }
