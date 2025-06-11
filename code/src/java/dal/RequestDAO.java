@@ -1,16 +1,20 @@
 package dal;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.*;
 import model.Request;
 import static model.Request.fromResultSet;
 
 public class RequestDAO {
-    
+
     private Connection conn;
 
     public RequestDAO(Connection conn) {
         this.conn = conn;
+    }
+
+    public RequestDAO() {
     }
 
     public void createRequest(Request request) throws SQLException {
@@ -141,7 +145,7 @@ public class RequestDAO {
         SELECT 1
         FROM Requests
         WHERE created_by = ?
-          AND status = 'Inprogress'
+          AND status != 'Rejected'
           AND (
               (from_date <= ? AND to_date >= ?)  -- Giao nhau với khoảng đã chọn
           )
@@ -168,11 +172,11 @@ public class RequestDAO {
 
     // Truyền thêm cả divisionId và isManager để phân biệt quyền
     public List<Request> getRequestsOfSubordinates(int managerId, int divisionId, boolean isManager) throws SQLException {
-    String sql;
+        String sql;
 
-    if (isManager) {
-        // Division Leader: xem toàn bộ đơn của division mình
-        sql = """
+        if (isManager) {
+            // Division Leader: xem toàn bộ đơn của division mình
+            sql = """
             SELECT r.*, 
                    u.full_name AS creator_name, 
                    d.name AS division_name, 
@@ -183,9 +187,9 @@ public class RequestDAO {
             LEFT JOIN Users p ON r.processed_by = p.id
             WHERE u.division_id = ?
         """;
-    } else {
-        // Trưởng nhóm: xem đơn của nhân viên cấp dưới
-        sql = """
+        } else {
+            // Trưởng nhóm: xem đơn của nhân viên cấp dưới
+            sql = """
             SELECT r.*, 
                    u.full_name AS creator_name, 
                    d.name AS division_name, 
@@ -196,35 +200,35 @@ public class RequestDAO {
             LEFT JOIN Users p ON r.processed_by = p.id
             WHERE u.manager_id = ?
         """;
-    }
-
-    List<Request> list = new ArrayList<>();
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        if (isManager) {
-            ps.setInt(1, divisionId);
-        } else {
-            ps.setInt(1, managerId);
         }
 
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Request r = new Request();
-                r.setId(rs.getInt("id"));
-                r.setTitle(rs.getString("title"));
-                r.setFromDate(rs.getDate("from_date"));
-                r.setToDate(rs.getDate("to_date"));
-                r.setReason(rs.getString("reason"));
-                r.setStatus(rs.getString("status"));
-                r.setCreatorName(rs.getString("creator_name"));
-                r.setDivisionName(rs.getString("division_name"));
-                r.setProcessedNote(rs.getString("processed_note"));
-                r.setProcessedByName(rs.getString("processor_name")); // ✅ dòng fix chính
-                list.add(r);
+        List<Request> list = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (isManager) {
+                ps.setInt(1, divisionId);
+            } else {
+                ps.setInt(1, managerId);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Request r = new Request();
+                    r.setId(rs.getInt("id"));
+                    r.setTitle(rs.getString("title"));
+                    r.setFromDate(rs.getDate("from_date"));
+                    r.setToDate(rs.getDate("to_date"));
+                    r.setReason(rs.getString("reason"));
+                    r.setStatus(rs.getString("status"));
+                    r.setCreatorName(rs.getString("creator_name"));
+                    r.setDivisionName(rs.getString("division_name"));
+                    r.setProcessedNote(rs.getString("processed_note"));
+                    r.setProcessedByName(rs.getString("processor_name")); // ✅ dòng fix chính
+                    list.add(r);
+                }
             }
         }
+        return list;
     }
-    return list;
-}
 
     public Request getById(int id) throws SQLException {
         String sql = "SELECT r.*, u.full_name AS creatorName, d.name AS divisionName "
@@ -250,5 +254,50 @@ public class RequestDAO {
             }
         }
         return null;
+    }
+
+    public Map<Integer, Set<String>> getLeaveDaysByDivision(int divisionId,
+            LocalDate from, LocalDate to) {
+
+        Map<Integer, Set<String>> leaveMap = new HashMap<>();
+
+        String sql = """
+        SELECT r.created_by, r.from_date, r.to_date
+        FROM Requests r              
+        JOIN Users u ON r.created_by = u.id  
+        WHERE u.division_id = ? 
+          AND r.status = 'Approved'
+          AND r.from_date <= ?        
+          AND r.to_date   >= ?
+    """;
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, divisionId);
+            ps.setDate(2, java.sql.Date.valueOf(to));     // đến
+            ps.setDate(3, java.sql.Date.valueOf(from));   // từ
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int userId = rs.getInt("created_by");
+                LocalDate f = rs.getDate("from_date").toLocalDate();
+                LocalDate t = rs.getDate("to_date").toLocalDate();
+
+                // cắt cho khớp khoảng người dùng chọn (tối ưu)
+                if (f.isBefore(from)) {
+                    f = from;
+                }
+                if (t.isAfter(to)) {
+                    t = to;
+                }
+
+                Set<String> dates = leaveMap.computeIfAbsent(userId, k -> new HashSet<>());
+                for (LocalDate d = f; !d.isAfter(t); d = d.plusDays(1)) {
+                    dates.add(d.toString());              // 2025-11-29 …
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return leaveMap;
     }
 }

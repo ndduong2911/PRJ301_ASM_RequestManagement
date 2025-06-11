@@ -1,3 +1,4 @@
+
 package controller;
 
 import jakarta.servlet.ServletException;
@@ -10,10 +11,10 @@ import java.util.List;
 
 import dal.UserDAO;
 import dal.RoleDAO;
-import dal.DivisionDAO; // ✅ Thêm dòng này
+import dal.DivisionDAO;
 import model.User;
 import model.Role;
-import model.Division; // ✅ Thêm dòng này
+import model.Division;
 import util.DBContext;
 
 @WebServlet("/login")
@@ -30,18 +31,20 @@ public class LoginController extends HttpServlet {
             User user = userDAO.getUserByUsername(username);
 
             if (user != null && user.getPassword().equals(hashedPassword)) {
-                // ✅ Bổ sung phần này để lấy tên phòng ban
                 DivisionDAO divisionDAO = new DivisionDAO(conn);
                 Division division = divisionDAO.getDivisionById(user.getDivisionId());
                 if (division != null) {
                     user.setDivisionName(division.getName());
                 }
 
-                HttpSession session = req.getSession();
-                session.setAttribute("user", user);
-
                 RoleDAO roleDAO = new RoleDAO(conn);
                 List<Role> roles = roleDAO.getRolesByUserId(user.getId());
+                if (!roles.isEmpty()) {
+                    user.setRoleName(roles.get(0).getName()); // ✅ gán roleName
+                }
+
+                HttpSession session = req.getSession();
+                session.setAttribute("user", user);
                 session.setAttribute("roles", roles);
 
                 resp.sendRedirect("index.jsp");

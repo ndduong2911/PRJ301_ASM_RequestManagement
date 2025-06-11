@@ -12,6 +12,9 @@ public class UserDAO {
         this.conn = conn;
     }
 
+    public UserDAO() {
+    }
+
     public User getUserByUsername(String username) throws SQLException {
         String sql = "SELECT * FROM Users WHERE username = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -158,4 +161,43 @@ public class UserDAO {
         }
         return list;
     }
+
+    public List<User> getUsersByDivision(int divisionId) {
+        List<User> list = new ArrayList<>();
+        String sql = "SELECT * FROM Users WHERE division_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, divisionId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                User u = new User();
+                u.setId(rs.getInt("id")); // ✅ cần thiết
+                u.setFullName(rs.getString("full_name"));
+                u.setUsername(rs.getString("username"));
+                list.add(u);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public User getUserById(int id) throws SQLException {
+        String sql = "SELECT * FROM Users WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("full_name"),
+                        rs.getInt("division_id"),
+                        rs.getObject("manager_id") != null ? rs.getInt("manager_id") : null
+                );
+            }
+        }
+        return null;
+    }
+
 }

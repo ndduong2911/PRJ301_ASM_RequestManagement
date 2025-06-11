@@ -59,20 +59,38 @@ public class RegisterController extends HttpServlet {
             } else if (roleDAO.roleNameById(roleId).equalsIgnoreCase("Division Leader")
                     && userDAO.hasDivisionLeader(divisionId)) {
                 req.setAttribute("error", "❌ Phòng ban này đã có Division Leader.");
+            } else if (managerId != null) {
+                User manager = userDAO.getUserById(managerId);
+                if (manager == null || manager.getDivisionId() != divisionId) {
+                    req.setAttribute("error", "❌ Người quản lý đã chọn không thuộc phòng ban này!");
+                } else {
+                    // Đăng ký
+                    String password = hashPassword(rawPassword);
+                    User user = new User(0, username, password, fullName, divisionId, managerId);
+                    int userId = userDAO.registerUserReturnId(user);
+                    new UserRoleDAO(conn).assignRoleToUser(userId, roleId);
+                    req.setAttribute("success", "✅ Đăng ký thành công! Bạn có thể đăng nhập.");
+                }
             } else {
+                // Trường hợp không có manager
                 String password = hashPassword(rawPassword);
-                User user = new User(0, username, password, fullName, divisionId, managerId);
+                User user = new User(0, username, password, fullName, divisionId, null);
                 int userId = userDAO.registerUserReturnId(user);
                 new UserRoleDAO(conn).assignRoleToUser(userId, roleId);
                 req.setAttribute("success", "✅ Đăng ký thành công! Bạn có thể đăng nhập.");
             }
 
+            // Reload dropdowns
             req.setAttribute("divisions", new DivisionDAO(conn).getAllDivisions());
             req.setAttribute("roles", new RoleDAO(conn).getAllRoles());
             req.setAttribute("managers", userDAO.getAllManagersWithRoleAndDivision());
             req.setAttribute("managerRoles", new UserRoleDAO(conn).getUserRoleNamesMap());
-            Map<Integer, String> managerRoles = userDAO.getAllManagerRoles();
-            req.setAttribute("managerRoles", managerRoles);
+            //Giữ lại thông tin
+            req.setAttribute("username", username);
+            req.setAttribute("fullName", fullName);
+            req.setAttribute("divisionId", divisionId);
+            req.setAttribute("roleId", roleId);
+            req.setAttribute("managerId", managerId);
             req.getRequestDispatcher("register.jsp").forward(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);

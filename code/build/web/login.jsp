@@ -3,57 +3,75 @@
 <html>
 <head>
     <title>Đăng nhập</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
     <style>
         body {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            background-size: cover;
-            font-family: 'Segoe UI', sans-serif;
             height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            margin: 0;
+            justify-content: center;
+            font-family: Arial, sans-serif;
         }
-        .login-card {
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 30px;
+
+        .login-box {
+            background: #fff;
+            padding: 35px 40px;
             border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            width: 400px;
+        }
+
+        .form-control {
+            height: 45px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .btn-gradient {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 10px;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .btn-gradient:hover {
+            opacity: 0.95;
+        }
+
+        .text-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .text-link a {
+            color: #333;
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-<div class="login-card">
-    <h3 class="text-center mb-4">Đăng nhập</h3>
-
-    <% if ("1".equals(request.getParameter("error"))) { %>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            ❌ Tên đăng nhập hoặc mật khẩu sai.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <% } %>
+<div class="login-box">
+    <h4 class="text-center mb-4">Đăng nhập</h4>
 
     <form action="login" method="post">
-        <div class="mb-3">
-            <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required>
-        </div>
-        <div class="mb-3">
-            <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required>
-        </div>
-        <div class="d-grid">
-            <input type="submit" class="btn btn-primary" value="Đăng nhập">
-        </div>
+        <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required />
+        <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required />
+        <button type="submit" class="btn-gradient">Đăng nhập</button>
     </form>
 
-    <div class="text-center mt-3">
+    <% if (request.getAttribute("error") != null) { %>
+    <div class="text-danger mt-3 fw-bold">❌ <%= request.getAttribute("error") %></div>
+    <% } %>
+
+    <div class="text-link">
         <a href="register">Chưa có tài khoản? Đăng ký ngay</a>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
