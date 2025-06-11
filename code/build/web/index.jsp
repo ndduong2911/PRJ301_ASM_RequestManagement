@@ -136,7 +136,23 @@
         </style>
     </head>
     <body class="d-flex">
-
+        <% if (success != null) { %>
+        <div class="alert alert-success text-center" style="
+             position: fixed;
+             top: 10px;
+             left: 58.5%;
+             transform: translateX(-50%);
+             z-index: 9999;
+             padding: 10px 20px;
+             border-radius: 8px;
+             background: linear-gradient(to right, #56ab2f, #a8e063);
+             color: white;
+             font-weight: bold;
+             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+             ">
+            <%= success %>
+        </div>
+        <% } %>
         <!-- Sidebar -->
         <div class="sidebar">
             <h5>👤 <%= user.getFullName() %></h5>
@@ -344,7 +360,7 @@
                         <% if (error != null) { %>
                         <div class="alert alert-danger"><%= error %></div>
                         <% } else if (success != null) { %>
-                        <div class="alert alert-success"><%= success %></div>
+                        
                         <% } %>
 
                         <form action="request/create" method="post">
@@ -373,4 +389,15 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
+
+    
+    <script>
+        setTimeout(() => {
+            const alert = document.querySelector('.alert-success');
+            if (alert)
+                alert.style.display = 'none';
+        }, 3000);
+    </script>
+    
+
 </html>

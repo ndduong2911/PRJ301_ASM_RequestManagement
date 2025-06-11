@@ -17,7 +17,7 @@
 
         <%-- Toast --%>
         <% if (success != null || error != null) { %>
-        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 9999;">
             <div class="toast align-items-center text-bg-<%= success != null ? "success" : "danger" %> border-0 show" role="alert">
                 <div class="d-flex">
                     <div class="toast-body">
@@ -48,7 +48,7 @@
             <div class="d-flex gap-2">
                 <button class="btn btn-success">Cập nhật</button>
                 <a href="delete?id=<%= r.getId() %>" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn này không?');">Xóa</a>
-                <a href="<%= request.getContextPath() %>/index.jsp?feature=create" class="btn btn-secondary">Quay về tạo đơn</a>
+                <a href="<%= request.getContextPath() %>/request/list" class="btn btn-secondary">Quay về xem đơn của tôi</a>
             </div>
         </form>
 

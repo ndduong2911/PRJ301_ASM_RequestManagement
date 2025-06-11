@@ -15,6 +15,7 @@ import util.DBContext;
 
 @WebServlet("/request/approve")
 public class RequestApprovalController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User currentUser = (User) req.getSession().getAttribute("user");
@@ -36,15 +37,16 @@ public class RequestApprovalController extends HttpServlet {
         try (Connection conn = DBContext.getConnection()) {
             RequestDAO dao = new RequestDAO(conn);
             List<Request> subRequests = dao.getRequestsOfSubordinates(
-                currentUser.getId(),
-                currentUser.getDivisionId(),
-                isManager
+                    currentUser.getId(),
+                    currentUser.getDivisionId(),
+                    isManager
             );
 
             req.getSession().setAttribute("subordinateRequests", subRequests);
             req.getSession().setAttribute("success", req.getAttribute("success"));
             req.getSession().setAttribute("error", req.getAttribute("error"));
 
+           
             resp.sendRedirect(req.getContextPath() + "/index.jsp?feature=approve");
         } catch (Exception e) {
             throw new ServletException("Không thể lấy danh sách đơn cấp dưới", e);

@@ -1,4 +1,3 @@
-
 package controller;
 
 import jakarta.servlet.ServletException;
@@ -47,9 +46,11 @@ public class LoginController extends HttpServlet {
                 session.setAttribute("user", user);
                 session.setAttribute("roles", roles);
 
-                resp.sendRedirect("index.jsp");
+                session.setAttribute("success", "✅ Đăng nhập thành công!");
+                req.getRequestDispatcher("index.jsp").forward(req, resp);
             } else {
-                resp.sendRedirect("login.jsp?error=1");
+                req.setAttribute("error", "❌ Tên đăng nhập hoặc mật khẩu không đúng.");
+                req.getRequestDispatcher("login.jsp").forward(req, resp);
             }
         } catch (Exception e) {
             throw new ServletException("Login failed", e);
