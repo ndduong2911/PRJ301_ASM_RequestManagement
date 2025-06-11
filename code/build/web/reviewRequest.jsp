@@ -1,37 +1,52 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="model.Request, model.User" %>
+<%@ page import="model.Request" %>
 <%
-    Request requestObj = (Request) request.getAttribute("request");
-    User currentUser = (User) session.getAttribute("user");
-    if (requestObj == null || currentUser == null) {
-        response.sendRedirect("index.jsp");
+    Request requestData = (Request) session.getAttribute("reviewRequest");
+    String error = (String) session.getAttribute("error");
+    String success = (String) session.getAttribute("success");
+    session.removeAttribute("error");
+    session.removeAttribute("success");
+
+    if (requestData == null) {
+        response.sendRedirect("index.jsp?feature=approve");
         return;
     }
 %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Duyệt đơn</title>
+    <title>Chi tiết đơn nghỉ phép</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
 </head>
-<body>
-    <div class="container mt-5">
-        <h4 class="mb-4 text-primary">Duyệt đơn xin nghỉ phép</h4>
+<body class="container mt-5">
+    <h3 class="mb-4">Chi tiết đơn nghỉ phép</h3>
 
-        <p><strong>Duyệt bởi:</strong> <%= currentUser.getFullName() %></p>
-        <p><strong>Tạo bởi:</strong> <%= requestObj.getCreatorName() %></p>
-        <p><strong>Phòng ban:</strong> <%= requestObj.getDivisionName() %></p>
-        <p><strong>Từ ngày:</strong> <%= requestObj.getFromDate() %></p>
-        <p><strong>Đến ngày:</strong> <%= requestObj.getToDate() %></p>
-        <p><strong>Lý do:</strong></p>
-        <div class="border p-2 bg-light mb-3"><%= requestObj.getReason() %></div>
+    <% if (error != null) { %>
+        <div class="alert alert-danger"><%= error %></div>
+    <% } else if (success != null) { %>
+        <div class="alert alert-success"><%= success %></div>
+    <% } %>
 
-        <form action="request/process" method="post" class="d-flex gap-2">
-            <input type="hidden" name="requestId" value="<%= requestObj.getId() %>"/>
-            <textarea name="note" class="form-control me-2" placeholder="Lý do duyệt hoặc từ chối" required></textarea>
-            <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
-            <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
-        </form>
-    </div>
+    <table class="table table-bordered">
+        <tr><th>Tiêu đề</th><td><%= requestData.getTitle() %></td></tr>
+        <tr><th>Từ ngày</th><td><%= requestData.getFromDate() %></td></tr>
+        <tr><th>Đến ngày</th><td><%= requestData.getToDate() %></td></tr>
+        <tr><th>Lý do</th><td><%= requestData.getReason() %></td></tr>
+        <tr><th>Người tạo</th><td><%= requestData.getCreatorName() %></td></tr>
+        <tr><th>Phòng ban</th><td><%= requestData.getDivisionName() %></td></tr>
+        <tr><th>Trạng thái hiện tại</th><td><%= requestData.getStatus() %></td></tr>
+        <tr><th>Ghi chú xử lý</th><td><%= requestData.getProcessedNote() != null ? requestData.getProcessedNote() : "Chưa có" %></td></tr>
+    </table>
+
+    <form action="request/process" method="post">
+        <input type="hidden" name="id" value="<%= requestData.getId() %>"/>
+        <div class="mb-3">
+            <label for="note" class="form-label">Ghi chú:</label>
+            <textarea name="note" id="note" rows="3" class="form-control"></textarea>
+        </div>
+        <button type="submit" name="action" value="approve" class="btn btn-success">✅ Duyệt đơn</button>
+        <button type="submit" name="action" value="reject" class="btn btn-danger">❌ Từ chối</button>
+        <a href="request/approve" class="btn btn-secondary">⬅ Quay lại</a>
+    </form>
 </body>
 </html>

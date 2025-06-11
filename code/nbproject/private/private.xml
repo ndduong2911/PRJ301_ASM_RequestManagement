@@ -5,6 +5,7 @@
         <group>
             <file>file:/D:/PRJ301-ASM/code/src/java/controller/LoginController.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/model/Role.java</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/controller/RequestApprovalController.java</file>
             <file>file:/D:/PRJ301-ASM/code/web/requestList.jsp</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/model/RoleFeature.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/model/Division.java</file>
@@ -31,6 +32,7 @@
             <file>file:/D:/PRJ301-ASM/code/src/java/controller/EditRequestController.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/controller/DeleteRequestController.java</file>
             <file>file:/D:/PRJ301-ASM/code/web/login.jsp</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/controller/ProcessRequestController.java</file>
             <file>file:/D:/PRJ301-ASM/code/web/index.jsp</file>
             <file>file:/D:/PRJ301-ASM/code/web/index.html</file>
             <file>file:/D:/PRJ301-ASM/code/web/agenda.jsp</file>

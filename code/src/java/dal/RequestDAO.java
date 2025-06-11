@@ -6,7 +6,7 @@ import model.Request;
 import static model.Request.fromResultSet;
 
 public class RequestDAO {
-
+    
     private Connection conn;
 
     public RequestDAO(Connection conn) {
@@ -39,21 +39,27 @@ public class RequestDAO {
             Request r = fromResultSet(rs);
             r.setCreatedByName(rs.getString("creatorName"));
             r.setProcessedByName(rs.getString("processorName"));
+            r.setProcessedNote(rs.getString("processed_note"));
             list.add(r);
         }
         return list;
     }
 
     public List<Request> getRequestsByManagedUsers(int managerId) throws SQLException {
-        String sql = "SELECT r.*, u.full_name as creatorName, p.full_name as processorName, u.manager_id, d.name as divisionName "
+        String sql = "SELECT r.*, "
+                + "u.full_name AS creatorName, "
+                + "p.full_name AS processorName, "
+                + "d.name AS divisionName "
                 + "FROM Requests r "
                 + "JOIN Users u ON r.created_by = u.id "
                 + "LEFT JOIN Users p ON r.processed_by = p.id "
                 + "JOIN Divisions d ON u.division_id = d.id "
-                + "WHERE u.manager_id = ? AND r.status = 'Inprogress'";
+                + "WHERE u.manager_id = ?";
+
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, managerId);
         ResultSet rs = ps.executeQuery();
+
         List<Request> list = new ArrayList<>();
         while (rs.next()) {
             Request r = new Request();
@@ -64,8 +70,9 @@ public class RequestDAO {
             r.setReason(rs.getString("reason"));
             r.setStatus(rs.getString("status"));
             r.setCreatorName(rs.getString("creatorName"));
-            r.setProcessedByName(rs.getString("processorName"));
             r.setDivisionName(rs.getString("divisionName"));
+            r.setProcessedNote(rs.getString("processed_note"));
+            r.setProcessedByName(rs.getString("processorName")); // ✅ Dòng bạn đang hỏi
             list.add(r);
         }
         return list;
@@ -118,6 +125,17 @@ public class RequestDAO {
         }
     }
 
+    public boolean updateRequestStatus(int requestId, String status, int processorId, String note) throws SQLException {
+        String sql = "UPDATE Requests SET status = ?, processed_by = ?, processed_note = ? WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, processorId);
+            ps.setString(3, note);
+            ps.setInt(4, requestId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
     public boolean hasOverlappingRequest(int userId, java.sql.Date fromDate, java.sql.Date toDate) throws SQLException {
         String sql = """
         SELECT 1
@@ -149,26 +167,34 @@ public class RequestDAO {
     }
 
     // Truyền thêm cả divisionId và isManager để phân biệt quyền
-public List<Request> getRequestsOfSubordinates(int managerId, int divisionId, boolean isManager) throws SQLException {
+    public List<Request> getRequestsOfSubordinates(int managerId, int divisionId, boolean isManager) throws SQLException {
     String sql;
 
     if (isManager) {
         // Division Leader: xem toàn bộ đơn của division mình
         sql = """
-            SELECT r.*, u.full_name AS creator_name, d.name AS division_name
+            SELECT r.*, 
+                   u.full_name AS creator_name, 
+                   d.name AS division_name, 
+                   p.full_name AS processor_name
             FROM Requests r
             JOIN Users u ON r.created_by = u.id
             JOIN Divisions d ON u.division_id = d.id
-            WHERE u.division_id = ? 
+            LEFT JOIN Users p ON r.processed_by = p.id
+            WHERE u.division_id = ?
         """;
     } else {
         // Trưởng nhóm: xem đơn của nhân viên cấp dưới
         sql = """
-            SELECT r.*, u.full_name AS creator_name, d.name AS division_name
+            SELECT r.*, 
+                   u.full_name AS creator_name, 
+                   d.name AS division_name, 
+                   p.full_name AS processor_name
             FROM Requests r
             JOIN Users u ON r.created_by = u.id
             JOIN Divisions d ON u.division_id = d.id
-            WHERE u.manager_id = ? 
+            LEFT JOIN Users p ON r.processed_by = p.id
+            WHERE u.manager_id = ?
         """;
     }
 
@@ -191,6 +217,8 @@ public List<Request> getRequestsOfSubordinates(int managerId, int divisionId, bo
                 r.setStatus(rs.getString("status"));
                 r.setCreatorName(rs.getString("creator_name"));
                 r.setDivisionName(rs.getString("division_name"));
+                r.setProcessedNote(rs.getString("processed_note"));
+                r.setProcessedByName(rs.getString("processor_name")); // ✅ dòng fix chính
                 list.add(r);
             }
         }
@@ -198,14 +226,29 @@ public List<Request> getRequestsOfSubordinates(int managerId, int divisionId, bo
     return list;
 }
 
-// Cập nhật trạng thái đơn
-    public boolean updateStatus(int requestId, String newStatus, int processedById) throws SQLException {
-        String sql = "UPDATE Requests SET status = ?, processed_by = ? WHERE id = ?";
+    public Request getById(int id) throws SQLException {
+        String sql = "SELECT r.*, u.full_name AS creatorName, d.name AS divisionName "
+                + "FROM Requests r "
+                + "JOIN Users u ON r.created_by = u.id "
+                + "JOIN Divisions d ON u.division_id = d.id "
+                + "WHERE r.id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, newStatus);
-            ps.setInt(2, processedById);
-            ps.setInt(3, requestId);
-            return ps.executeUpdate() > 0;
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Request r = new Request();
+                r.setId(rs.getInt("id"));
+                r.setTitle(rs.getString("title"));
+                r.setFromDate(rs.getDate("from_date"));
+                r.setToDate(rs.getDate("to_date"));
+                r.setReason(rs.getString("reason"));
+                r.setStatus(rs.getString("status"));
+                r.setCreatorName(rs.getString("creatorName"));
+                r.setDivisionName(rs.getString("divisionName"));
+                r.setProcessedNote(rs.getString("processed_note"));
+                return r;
+            }
         }
+        return null;
     }
 }
