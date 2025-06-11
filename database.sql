@@ -33,21 +33,6 @@ CREATE TABLE UserRole (
     FOREIGN KEY (role_id) REFERENCES Roles(id)
 );
 
--- Tạo bảng Features
-CREATE TABLE Features (
-    id INT IDENTITY PRIMARY KEY,
-    name NVARCHAR(100) NOT NULL,
-    path NVARCHAR(200) NOT NULL
-);
-
--- Tạo bảng RoleFeature
-CREATE TABLE RoleFeature (
-    role_id INT,
-    feature_id INT,
-    PRIMARY KEY (role_id, feature_id),
-    FOREIGN KEY (role_id) REFERENCES Roles(id),
-    FOREIGN KEY (feature_id) REFERENCES Features(id)
-);
 
 -- Tạo bảng Requests
 CREATE TABLE Requests (

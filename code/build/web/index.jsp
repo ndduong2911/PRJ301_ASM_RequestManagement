@@ -120,9 +120,16 @@
                             <td><%= r.getToDate() %></td>
                             <td><%= r.getReason() %></td>
                             <td>
-                                <%= r.getStatus() %>
-                                <% if ("Inprogress".equalsIgnoreCase(r.getStatus())) { %>
-                                <a href="<%= request.getContextPath() + "/request/edit?id=" + r.getId() %>" class="btn btn-sm btn-warning">Sửa</a>
+                                <% String status = r.getStatus(); %>
+                                <% if ("Inprogress".equalsIgnoreCase(status)) { %>
+                                <span class="badge bg-warning text-dark">Inprogress</span>
+                                <a href="<%= request.getContextPath() + "/request/edit?id=" + r.getId() %>" class="btn btn-sm btn-warning ms-2">Sửa</a>
+                                <% } else if ("Approved".equalsIgnoreCase(status)) { %>
+                                <span class="badge bg-success">Approved</span>
+                                <% } else if ("Rejected".equalsIgnoreCase(status)) { %>
+                                <span class="badge bg-danger">Rejected</span>
+                                <% } else { %>
+                                <span class="badge bg-secondary"><%= status %></span>
                                 <% } %>
                             </td>
                             <td><%= r.getProcessedNote() != null ? r.getProcessedNote() : "Chưa có" %></td>
