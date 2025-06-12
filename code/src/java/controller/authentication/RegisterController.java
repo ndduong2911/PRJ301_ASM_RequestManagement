@@ -50,18 +50,28 @@ public class RegisterController extends HttpServlet {
 
             UserDAO userDAO = new UserDAO(conn);
             RoleDAO roleDAO = new RoleDAO(conn);
+// Regex kiểm tra
+            boolean invalidUsername = !username.matches("^[a-zA-Z0-9]{8,16}$");
+            boolean weakPassword = !rawPassword.matches("^(?=.*[a-z])(?=.*\\d).{10,}$");
+            boolean invalidFullName = !fullName.matches("^[\\p{L}]+(\\s[\\p{L}]+)+$");
 
-            if (!rawPassword.equals(confirmPassword)) {
-                req.setAttribute("error", "❌ Mật khẩu xác nhận không khớp.");
+            if (invalidUsername) {
+                req.setAttribute("error", "⚠️ Tên đăng nhập phải dài 8–16 ký tự, không chứa ký tự đặc biệt.");
+            } else if (invalidFullName) {
+                req.setAttribute("error", "⚠️ Họ tên phải gồm ít nhất 2 từ, chỉ chứa chữ và khoảng trắng.");
+            } else if (weakPassword) {
+                req.setAttribute("error", "⚠️ Mật khẩu phải có ít nhất 10 ký tự, bao gồm chữ thường và số.");
+            } else if (!rawPassword.equals(confirmPassword)) {
+                req.setAttribute("error", " Mật khẩu xác nhận không khớp.");
             } else if (userDAO.getUserByUsername(username) != null) {
                 req.setAttribute("error", "⚠️ Tên đăng nhập đã tồn tại.");
             } else if (roleDAO.roleNameById(roleId).equalsIgnoreCase("Division Leader")
                     && userDAO.hasDivisionLeader(divisionId)) {
-                req.setAttribute("error", "❌ Phòng ban này đã có Division Leader.");
+                req.setAttribute("error", " Phòng ban này đã có Division Leader.");
             } else if (managerId != null) {
                 User manager = userDAO.getUserById(managerId);
                 if (manager == null || manager.getDivisionId() != divisionId) {
-                    req.setAttribute("error", "❌ Người quản lý đã chọn không thuộc phòng ban này!");
+                    req.setAttribute("error", " Người quản lý đã chọn không thuộc phòng ban này!");
                 } else {
                     String password = hashPassword(rawPassword);
                     User user = new User(0, username, password, fullName, divisionId, managerId);
