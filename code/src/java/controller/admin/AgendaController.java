@@ -1,4 +1,4 @@
-package controller;
+package controller.admin;
 
 import dal.RequestDAO;
 import dal.UserDAO;

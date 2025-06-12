@@ -1,4 +1,4 @@
-package controller;
+package controller.admin;
 
 import dal.RequestDAO;
 import jakarta.servlet.ServletException;
@@ -33,6 +33,7 @@ public class ProcessRequestController extends HttpServlet {
 
             if (updated) {
                 req.getSession().setAttribute("success", "Đã cập nhật trạng thái đơn.");
+  
             } else {
                 req.getSession().setAttribute("error", "Không thể cập nhật đơn.");
             }

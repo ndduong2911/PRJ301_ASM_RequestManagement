@@ -237,6 +237,29 @@
                 <% } %>
 
                 <% } else if ("approve".equals(activeFeature)) { %>
+                <%
+        
+        if (success != null) {
+                %>
+                <div id="alertBox" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+                     background-color: #dff0d8; color: #3c763d; padding: 10px 20px;
+                     border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); z-index: 1000;">
+                    <% if ("approved".equals(success)) { %>
+                    <%= success %>
+                    <% } else if ("rejected".equals(success)) { %>
+                    <%= success %>
+                    <% } %>
+                </div>
+                <script>
+                    setTimeout(() => {
+                        const alert = document.getElementById("alertBox");
+                        if (alert)
+                            alert.remove();
+                    }, 1500);
+                </script>
+                <%
+                    }
+                %>
                 <h3>Danh sách các đơn xin nghỉ của cấp dưới </h3>
                 <% if (subordinateRequests == null || subordinateRequests.isEmpty()) { %>
                 <div class="alert alert-info">Không có đơn nào cần xét duyệt.</div>
@@ -360,7 +383,7 @@
                         <% if (error != null) { %>
                         <div class="alert alert-danger"><%= error %></div>
                         <% } else if (success != null) { %>
-                        
+
                         <% } %>
 
                         <form action="request/create" method="post">
@@ -390,14 +413,14 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 
-    
+
     <script>
-        setTimeout(() => {
-            const alert = document.querySelector('.alert-success');
-            if (alert)
-                alert.style.display = 'none';
-        }, 3000);
+            setTimeout(() => {
+                const alert = document.querySelector('.alert-success');
+                if (alert)
+                    alert.style.display = 'none';
+            }, 3000);
     </script>
-    
+
 
 </html>

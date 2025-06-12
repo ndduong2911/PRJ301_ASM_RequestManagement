@@ -4,12 +4,20 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/PRJ301-ASM/code/src/java/controller/LoginController.java</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/controller/RequestApprovalController.java</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/model/User.java</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/controller/AgendaController.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/dal/RequestDAO.java</file>
             <file>file:/D:/PRJ301-ASM/code/src/java/dal/UserDAO.java</file>
-            <file>file:/D:/PRJ301-ASM/code/src/java/model/User.java</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/controller/EditRequestController.java</file>
+            <file>file:/D:/PRJ301-ASM/code/web/editRequest.jsp</file>
+            <file>file:/D:/PRJ301-ASM/code/web/reviewRequest.jsp</file>
+            <file>file:/D:/PRJ301-ASM/code/web/login.jsp</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/controller/ProcessRequestController.java</file>
             <file>file:/D:/PRJ301-ASM/code/web/index.jsp</file>
-            <file>file:/D:/PRJ301-ASM/code/src/java/controller/AgendaController.java</file>
+            <file>file:/D:/PRJ301-ASM/code/web/register.jsp</file>
             <file>file:/D:/PRJ301-ASM/code/web/agenda.jsp</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/controller/RegisterController.java</file>
         </group>
     </open-files>
 </project-private>
