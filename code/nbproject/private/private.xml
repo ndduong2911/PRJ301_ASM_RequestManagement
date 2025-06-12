@@ -3,21 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/PRJ301-ASM/code/src/java/controller/LoginController.java</file>
-            <file>file:/D:/PRJ301-ASM/code/src/java/controller/RequestApprovalController.java</file>
-            <file>file:/D:/PRJ301-ASM/code/src/java/model/User.java</file>
-            <file>file:/D:/PRJ301-ASM/code/src/java/controller/AgendaController.java</file>
-            <file>file:/D:/PRJ301-ASM/code/src/java/dal/RequestDAO.java</file>
-            <file>file:/D:/PRJ301-ASM/code/src/java/dal/UserDAO.java</file>
-            <file>file:/D:/PRJ301-ASM/code/src/java/controller/EditRequestController.java</file>
-            <file>file:/D:/PRJ301-ASM/code/web/editRequest.jsp</file>
-            <file>file:/D:/PRJ301-ASM/code/web/reviewRequest.jsp</file>
-            <file>file:/D:/PRJ301-ASM/code/web/login.jsp</file>
-            <file>file:/D:/PRJ301-ASM/code/src/java/controller/ProcessRequestController.java</file>
-            <file>file:/D:/PRJ301-ASM/code/web/index.jsp</file>
-            <file>file:/D:/PRJ301-ASM/code/web/register.jsp</file>
-            <file>file:/D:/PRJ301-ASM/code/web/agenda.jsp</file>
-            <file>file:/D:/PRJ301-ASM/code/src/java/controller/RegisterController.java</file>
+            <file>file:/D:/PRJ301-ASM/code/web/view/index.jsp</file>
+            <file>file:/D:/PRJ301-ASM/code/web/view/admin/reviewRequest.jsp</file>
+            <file>file:/D:/PRJ301-ASM/code/src/java/controller/authentication/LoginController.java</file>
+            <file>file:/D:/PRJ301-ASM/code/web/view/request/createRequest.jsp</file>
+            <file>file:/D:/PRJ301-ASM/code/web/authentication/register.jsp</file>
+            <file>file:/D:/PRJ301-ASM/code/web/authentication/login.jsp</file>
+            <file>file:/D:/PRJ301-ASM/code/web/view/admin/agenda.jsp</file>
         </group>
     </open-files>
 </project-private>

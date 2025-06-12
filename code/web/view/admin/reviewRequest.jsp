@@ -38,7 +38,7 @@
         <tr><th>Ghi chú xử lý</th><td><%= requestData.getProcessedNote() != null ? requestData.getProcessedNote() : "Chưa có" %></td></tr>
     </table>
 
-    <form action="request/process" method="post">
+<form action="<%= request.getContextPath() %>/request/process" method="post">
         <input type="hidden" name="id" value="<%= requestData.getId() %>"/>
         <div class="mb-3">
             <label for="note" class="form-label">Ghi chú:</label>
@@ -46,7 +46,8 @@
         </div>
         <button type="submit" name="action" value="approve" class="btn btn-success">✅ Duyệt đơn</button>
         <button type="submit" name="action" value="reject" class="btn btn-danger">❌ Từ chối</button>
-        <a href="request/approve" class="btn btn-secondary">⬅ Quay lại</a>
+<a href="<%= request.getContextPath() %>/request/approve" class="btn btn-secondary">⬅ Quay lại</a>
+
     </form>
 </body>
 </html>

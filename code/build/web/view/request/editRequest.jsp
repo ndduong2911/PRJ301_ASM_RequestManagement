@@ -31,7 +31,7 @@
 
         <h3>Sửa đơn nghỉ phép</h3>
 
-        <form action="edit" method="post">
+<form action="<%= request.getContextPath() %>/request/edit" method="post">
             <input type="hidden" name="id" value="<%= r.getId() %>">
             <div class="mb-3">
                 <label>Từ ngày:</label>
@@ -47,7 +47,7 @@
             </div>
             <div class="d-flex gap-2">
                 <button class="btn btn-success">Cập nhật</button>
-                <a href="delete?id=<%= r.getId() %>" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn này không?');">Xóa</a>
+                <a href="<%= request.getContextPath() %>/request/delete?id=<%= r.getId() %>" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn này không?');">Xóa</a>
                 <a href="<%= request.getContextPath() %>/request/list" class="btn btn-secondary">Quay về xem đơn của tôi</a>
             </div>
         </form>

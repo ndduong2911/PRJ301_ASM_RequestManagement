@@ -47,10 +47,11 @@ public class LoginController extends HttpServlet {
                 session.setAttribute("roles", roles);
 
                 session.setAttribute("success", "✅ Đăng nhập thành công!");
-                req.getRequestDispatcher("index.jsp").forward(req, resp);
+                req.getRequestDispatcher("view/index.jsp").forward(req, resp);  // ✅ updated
             } else {
                 req.setAttribute("error", "❌ Tên đăng nhập hoặc mật khẩu không đúng.");
-                req.getRequestDispatcher("login.jsp").forward(req, resp);
+                req.getRequestDispatcher("/view/authentication/login.jsp").forward(req, resp);
+
             }
         } catch (Exception e) {
             throw new ServletException("Login failed", e);
@@ -59,7 +60,8 @@ public class LoginController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("login.jsp").forward(req, resp);
+        req.getRequestDispatcher("/view/authentication/login.jsp").forward(req, resp);
+
     }
 
     private String hashPassword(String password) {
@@ -69,7 +71,7 @@ public class LoginController extends HttpServlet {
             StringBuilder sb = new StringBuilder();
             for (byte b : bytes) {
                 sb.append(String.format("%02x", b));
-            }
+            } 
             return sb.toString();
         } catch (Exception e) {
             return password;

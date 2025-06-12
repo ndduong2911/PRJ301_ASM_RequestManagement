@@ -20,7 +20,7 @@ public class EditRequestController extends HttpServlet {
             RequestDAO dao = new RequestDAO(conn);
             Request r = dao.getRequestById(id);
             req.setAttribute("requestToEdit", r);
-            req.getRequestDispatcher("/editRequest.jsp").forward(req, resp);
+            req.getRequestDispatcher("/view/request/editRequest.jsp").forward(req, resp); // ✅ updated
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -60,7 +60,7 @@ public class EditRequestController extends HttpServlet {
 
         } catch (IllegalArgumentException e) {
             req.setAttribute("error", "Định dạng ngày không hợp lệ!");
-            req.getRequestDispatcher("/editRequest.jsp").forward(req, resp);
+            req.getRequestDispatcher("/view/request/editRequest.jsp").forward(req, resp); // ✅ updated
         } catch (Exception e) {
             HttpSession session = req.getSession();
             session.setAttribute("error", "Cập nhật thất bại hoặc không hợp lệ!");

@@ -24,7 +24,7 @@
                 <% } %>
 
                 <!-- ✅ Fix đường dẫn action bị sai -->
-                <form action="${pageContext.request.contextPath}/request/create" method="post">
+<form action="<%= request.getContextPath() %>/request/create" method="post">
                     <div class="mb-3">
                         <label for="fromDate" class="form-label">Từ ngày:</label>
                         <input type="date" class="form-control" id="fromDate" name="fromDate" required>

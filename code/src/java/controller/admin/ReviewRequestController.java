@@ -17,7 +17,7 @@ public class ReviewRequestController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String idRaw = req.getParameter("id");
         if (idRaw == null) {
-            resp.sendRedirect("index.jsp?feature=approve");
+            resp.sendRedirect(req.getContextPath() + "/view/index.jsp?feature=approve"); // ✅ updated
             return;
         }
 
@@ -27,11 +27,11 @@ public class ReviewRequestController extends HttpServlet {
             Request r = dao.getById(id);
             if (r == null) {
                 req.getSession().setAttribute("error", "Không tìm thấy đơn.");
-                resp.sendRedirect("index.jsp?feature=approve");
+                resp.sendRedirect(req.getContextPath() + "/view/index.jsp?feature=approve"); // ✅ updated
                 return;
             }
             req.getSession().setAttribute("reviewRequest", r);
-            resp.sendRedirect("reviewRequest.jsp");
+            resp.sendRedirect(req.getContextPath() + "/view/admin/reviewRequest.jsp"); // ✅ updated
         } catch (Exception e) {
             throw new ServletException("Lỗi khi load đơn nghỉ", e);
         }

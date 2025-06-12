@@ -20,7 +20,7 @@ public class RequestListController extends HttpServlet {
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
-            resp.sendRedirect(req.getContextPath() + "/login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/view/authentication/login.jsp"); // ✅ updated
             return;
         }
 
@@ -29,7 +29,6 @@ public class RequestListController extends HttpServlet {
             List<Request> list = dao.getRequestsByUser(user.getId());
             session.setAttribute("myRequests", list);
 
-            // ✅ Lấy thông báo thành công/thất bại nếu có
             String success = (String) session.getAttribute("success");
             String error = (String) session.getAttribute("error");
             if (success != null) {
@@ -41,7 +40,7 @@ public class RequestListController extends HttpServlet {
                 session.removeAttribute("error");
             }
 
-            req.getRequestDispatcher("/index.jsp?feature=list").forward(req, resp);
+            req.getRequestDispatcher("/view/index.jsp?feature=list").forward(req, resp); // ✅ updated
 
         } catch (Exception e) {
             throw new ServletException(e);

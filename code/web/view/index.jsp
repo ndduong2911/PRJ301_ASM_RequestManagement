@@ -165,7 +165,7 @@
             </ul>
             <hr/>
 
-            <a href="<%= request.getContextPath() %>/index.jsp?feature=create" class="<%= "create".equals(activeFeature) ? "active" : "" %>">📝 Tạo đơn nghỉ phép</a>
+            <a href="<%= request.getContextPath() %>/view/index.jsp?feature=create" class="<%= "create".equals(activeFeature) ? "active" : "" %>">📝 Tạo đơn nghỉ phép</a>
             <a href="<%= request.getContextPath() %>/request/list" class="<%= "list".equals(activeFeature) ? "active" : "" %>">📄 Xem đơn của tôi</a>
 
             <% if (isLeader || isManager) { %>
@@ -173,7 +173,7 @@
             <% } %>
 
             <% if (isManager || isLeader) { %>
-            <a href="index.jsp?feature=agenda"
+            <a href="<%= request.getContextPath() %>/view/index.jsp?feature=agenda"
                class="<%= "agenda".equals(activeFeature) ? "active" : "" %>">
                 📊 Tình hình lao động
             </a>
@@ -279,7 +279,7 @@
                     <tbody>
                         <% for (Request r : subordinateRequests) { %>
                         <tr>
-                            <td><a href="reviewRequest?id=<%= r.getId() %>"><%= r.getReason() %></a></td>
+                       <td><a href="<%= request.getContextPath() %>/reviewRequest?id=<%= r.getId() %>"><%= r.getReason() %></a></td>
                                 <%
         DateTimeFormatter df = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                                 %>
@@ -309,7 +309,7 @@
                 <% } else if ("agenda".equals(activeFeature)) { %>
                 <h3 class="text-center mb-4">📊 Agenda - Tình hình lao động</h3>
                 <div class="card shadow p-4" style="max-width: 600px; margin: auto;">
-                    <form method="get" action="agenda" class="row g-3 justify-content-center">
+                   <form method="get" action="<%= request.getContextPath() %>/agenda" class="row g-3 justify-content-center">
                         <input type="hidden" name="feature" value="agenda" />
 
                         <div class="col-md-6">
@@ -386,7 +386,7 @@
 
                         <% } %>
 
-                        <form action="request/create" method="post">
+                        <form action="<%= request.getContextPath() %>/request/create" method="post">
                             <div class="mb-3">
                                 <label for="fromDate" class="form-label">Từ ngày:</label>
                                 <input type="date" class="form-control" id="fromDate" name="fromDate" required>

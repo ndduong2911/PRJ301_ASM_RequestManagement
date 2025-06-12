@@ -20,7 +20,7 @@ public class CreateRequestController extends HttpServlet {
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
-            resp.sendRedirect(req.getContextPath() + "/login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/view/authentication/login.jsp");  // ✅ updated
             return;
         }
 
@@ -35,14 +35,14 @@ public class CreateRequestController extends HttpServlet {
 
             if (fromDate.before(today) || toDate.before(fromDate)) {
                 session.setAttribute("error", "Ngày không hợp lệ!");
-                resp.sendRedirect(req.getContextPath() + "/index.jsp?feature=create");
+                resp.sendRedirect(req.getContextPath() + "/view/index.jsp?feature=create");  // ✅ updated
                 return;
             }
 
             RequestDAO dao = new RequestDAO(conn);
             if (dao.hasOverlappingRequest(user.getId(), fromDate, toDate)) {
                 session.setAttribute("error", "Bạn đã có đơn nghỉ trong khoảng thời gian này!");
-                resp.sendRedirect(req.getContextPath() + "/index.jsp?feature=create");
+                resp.sendRedirect(req.getContextPath() + "/view/index.jsp?feature=create");  // ✅ updated
                 return;
             }
 
@@ -56,11 +56,11 @@ public class CreateRequestController extends HttpServlet {
 
             dao.createRequest(r);
             session.setAttribute("success", "Đơn đã gửi thành công!");
-            resp.sendRedirect(req.getContextPath() + "/index.jsp?feature=create");
+            resp.sendRedirect(req.getContextPath() + "/view/index.jsp?feature=create");  // ✅ updated
 
         } catch (IllegalArgumentException e) {
             session.setAttribute("error", "Định dạng ngày không hợp lệ!");
-            resp.sendRedirect(req.getContextPath() + "/index.jsp?feature=create");
+            resp.sendRedirect(req.getContextPath() + "/view/index.jsp?feature=create");  // ✅ updated
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -68,6 +68,6 @@ public class CreateRequestController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.sendRedirect(req.getContextPath() + "/index.jsp?feature=create");
+        resp.sendRedirect(req.getContextPath() + "/view/index.jsp?feature=create");  // ✅ updated
     }
 }

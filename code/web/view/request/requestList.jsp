@@ -44,10 +44,11 @@
                     <td><%= r.getProcessedByName() %></td>
                     <td>
                         <% if (r.getCreatedBy() == currentUser.getId() && "Inprogress".equals(r.getStatus())) { %>
-                        <a href="request/edit?id=<%= r.getId() %>" class="btn btn-warning btn-sm">Sửa</a>
+                     <a href="<%= request.getContextPath() %>/request/edit?id=<%= r.getId() %>" class="btn btn-warning btn-sm">Sửa</a>
                         <% } %>
                         <% if (r.isManagedBy(currentUser.getId())) { %>
-                        <a href="request/review?id=<%= r.getId() %>" class="btn btn-primary btn-sm">Xét duyệt</a>
+                       <a href="<%= request.getContextPath() %>/request/review?id=<%= r.getId() %>" class="btn btn-primary btn-sm">Xét duyệt</a>
+
                         <% } %>
                     </td>
                 </tr>

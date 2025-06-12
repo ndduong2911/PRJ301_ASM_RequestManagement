@@ -22,7 +22,7 @@ public class RequestApprovalController extends HttpServlet {
         List<Role> roles = (List<Role>) req.getSession().getAttribute("roles");
 
         if (currentUser == null || roles == null) {
-            resp.sendRedirect("login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/view/authentication/login.jsp"); // ✅ updated
             return;
         }
 
@@ -46,8 +46,7 @@ public class RequestApprovalController extends HttpServlet {
             req.getSession().setAttribute("success", req.getAttribute("success"));
             req.getSession().setAttribute("error", req.getAttribute("error"));
 
-           
-            resp.sendRedirect(req.getContextPath() + "/index.jsp?feature=approve");
+            resp.sendRedirect(req.getContextPath() + "/view/index.jsp?feature=approve"); // ✅ updated
         } catch (Exception e) {
             throw new ServletException("Không thể lấy danh sách đơn cấp dưới", e);
         }

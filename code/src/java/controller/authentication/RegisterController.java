@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
 
 import dal.*;
 import model.*;
@@ -31,7 +30,7 @@ public class RegisterController extends HttpServlet {
 
             req.setAttribute("managerRoles", userRoleDAO.getUserRoleNamesMap());
 
-            req.getRequestDispatcher("register.jsp").forward(req, resp);
+            req.getRequestDispatcher("view/authentication/register.jsp").forward(req, resp); // ✅ updated
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -64,7 +63,6 @@ public class RegisterController extends HttpServlet {
                 if (manager == null || manager.getDivisionId() != divisionId) {
                     req.setAttribute("error", "❌ Người quản lý đã chọn không thuộc phòng ban này!");
                 } else {
-                    // Đăng ký
                     String password = hashPassword(rawPassword);
                     User user = new User(0, username, password, fullName, divisionId, managerId);
                     int userId = userDAO.registerUserReturnId(user);
@@ -72,7 +70,6 @@ public class RegisterController extends HttpServlet {
                     req.setAttribute("success", "✅ Đăng ký thành công! Bạn có thể đăng nhập.");
                 }
             } else {
-                // Trường hợp không có manager
                 String password = hashPassword(rawPassword);
                 User user = new User(0, username, password, fullName, divisionId, null);
                 int userId = userDAO.registerUserReturnId(user);
@@ -80,18 +77,17 @@ public class RegisterController extends HttpServlet {
                 req.setAttribute("success", "✅ Đăng ký thành công! Bạn có thể đăng nhập.");
             }
 
-            // Reload dropdowns
             req.setAttribute("divisions", new DivisionDAO(conn).getAllDivisions());
             req.setAttribute("roles", new RoleDAO(conn).getAllRoles());
             req.setAttribute("managers", userDAO.getAllManagersWithRoleAndDivision());
             req.setAttribute("managerRoles", new UserRoleDAO(conn).getUserRoleNamesMap());
-            //Giữ lại thông tin
+
             req.setAttribute("username", username);
             req.setAttribute("fullName", fullName);
             req.setAttribute("divisionId", divisionId);
             req.setAttribute("roleId", roleId);
             req.setAttribute("managerId", managerId);
-            req.getRequestDispatcher("register.jsp").forward(req, resp);
+            req.getRequestDispatcher("view/authentication/register.jsp").forward(req, resp); // ✅ updated
         } catch (Exception e) {
             throw new ServletException(e);
         }
