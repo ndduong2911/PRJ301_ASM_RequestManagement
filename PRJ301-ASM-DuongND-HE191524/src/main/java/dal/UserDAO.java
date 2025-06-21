@@ -199,5 +199,31 @@ public class UserDAO {
         }
         return null;
     }
+    
+      public void createUser(User user) throws SQLException {
+        String sql = "INSERT INTO Users(username, password, full_name, manager_id, division_id) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, user.getUsername());
+            ps.setString(2, null);
+            ps.setString(3, user.getFullName());
+            ps.setObject(4, user.getManagerId());
+            ps.setObject(5, user.getDivisionId());
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                user.setId(rs.getInt(1));
+            }
+        }
+    }
 
+    public void assignRole(int userId, int roleId) throws SQLException {
+        String sql = "INSERT INTO UserRole(user_id, role_id) VALUES (?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, roleId);
+            ps.executeUpdate();
+        }
+    }
 }
+
+

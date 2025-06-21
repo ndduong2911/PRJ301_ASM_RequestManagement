@@ -5,7 +5,7 @@ import dal.UserDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import model.User;
+import model.User; 
 import util.DBContext;
 
 import java.io.IOException;
@@ -17,13 +17,13 @@ import java.sql.Connection;
 @WebServlet("/agenda")
 public class AgendaController extends HttpServlet {
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-YYYY");
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User currentUser = (User) req.getSession().getAttribute("user");
         if (currentUser == null) {
-            resp.sendRedirect("view/authentication/login.jsp"); // ✅ updated
+                        resp.sendRedirect(req.getContextPath() + "view/authentication/login.jsp"); // ✅ updated
             return;
         }
 

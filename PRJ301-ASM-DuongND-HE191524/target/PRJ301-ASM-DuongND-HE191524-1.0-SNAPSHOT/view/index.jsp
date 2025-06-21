@@ -10,7 +10,23 @@
         response.sendRedirect("login.jsp");
         return;
     }
+    boolean isLeader = false;
+    boolean isManager = false;
+    for (Role r : roles) {
+        if ("Trưởng nhóm".equalsIgnoreCase(r.getName())) isLeader = true;
+        if ("Division Leader".equalsIgnoreCase(r.getName())) isManager = true;
+    }
     String activeFeature = request.getParameter("feature");
+    // Chặn truy cập trái phép theo feature
+if ("agenda".equals(activeFeature) && !(isManager || isLeader)) {
+    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+    return;
+}
+
+if ("approve".equals(activeFeature) && !(isManager || isLeader)) {
+    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+    return;
+}
 
     String success = (String) session.getAttribute("success");
     String error = (String) session.getAttribute("error");
@@ -23,12 +39,7 @@
     List<Request> subordinateRequests = (List<Request>) session.getAttribute("subordinateRequests");
     session.removeAttribute("subordinateRequests");
 
-    boolean isLeader = false;
-    boolean isManager = false;
-    for (Role r : roles) {
-        if ("Trưởng nhóm".equalsIgnoreCase(r.getName())) isLeader = true;
-        if ("Division Leader".equalsIgnoreCase(r.getName())) isManager = true;
-    }
+    
 %>
 <!DOCTYPE html>
 <html>
@@ -168,11 +179,10 @@
             <a href="<%= request.getContextPath() %>/view/index.jsp?feature=create" class="<%= "create".equals(activeFeature) ? "active" : "" %>">📝 Tạo đơn nghỉ phép</a>
             <a href="<%= request.getContextPath() %>/request/list" class="<%= "list".equals(activeFeature) ? "active" : "" %>">📄 Xem đơn của tôi</a>
 
-            <% if (isLeader || isManager) { %>
-            <a href="<%= request.getContextPath() %>/request/approve" class="<%= "approve".equals(activeFeature) ? "active" : "" %>">📥 Xét duyệt đơn cấp dưới</a>
-            <% } %>
-
             <% if (isManager || isLeader) { %>
+
+            <a href="<%= request.getContextPath() %>/request/approve" class="<%= "approve".equals(activeFeature) ? "active" : "" %>">📥 Xét duyệt đơn cấp dưới</a>
+
             <a href="<%= request.getContextPath() %>/view/index.jsp?feature=agenda"
                class="<%= "agenda".equals(activeFeature) ? "active" : "" %>">
                 📊 Tình hình lao động
@@ -183,7 +193,7 @@
         <!-- Content -->
         <div class="flex-grow-1">
             <nav class="d-flex justify-content-end p-3">
-                <form action="<%= request.getContextPath() %>/logout" method="post">
+                <form id="logoutForm" action="<%= request.getContextPath() %>/logout" method="post" onsubmit="return confirmLogout();">
                     <button class="btn btn-outline-danger btn-sm">Đăng xuất</button>
                 </form>
             </nav>
@@ -279,7 +289,7 @@
                     <tbody>
                         <% for (Request r : subordinateRequests) { %>
                         <tr>
-                       <td><a href="<%= request.getContextPath() %>/reviewRequest?id=<%= r.getId() %>"><%= r.getReason() %></a></td>
+                            <td><a href="<%= request.getContextPath() %>/reviewRequest?id=<%= r.getId() %>"><%= r.getReason() %></a></td>
                                 <%
         DateTimeFormatter df = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                                 %>
@@ -309,7 +319,7 @@
                 <% } else if ("agenda".equals(activeFeature)) { %>
                 <h3 class="text-center mb-4">📊 Agenda - Tình hình lao động</h3>
                 <div class="card shadow p-4" style="max-width: 600px; margin: auto;">
-                   <form method="get" action="<%= request.getContextPath() %>/agenda" class="row g-3 justify-content-center">
+                    <form method="get" action="<%= request.getContextPath() %>/agenda" class="row g-3 justify-content-center">
                         <input type="hidden" name="feature" value="agenda" />
 
                         <div class="col-md-6">
@@ -415,12 +425,16 @@
 
 
     <script>
-            setTimeout(() => {
-                const alert = document.querySelector('.alert-success');
-                if (alert)
-                    alert.style.display = 'none';
-            }, 3000);
+                    setTimeout(() => {
+                        const alert = document.querySelector('.alert-success');
+                        if (alert)
+                            alert.style.display = 'none';
+                    }, 3000);
     </script>
-
+<script>
+    function confirmLogout() {
+        return confirm("Bạn có chắc chắn muốn đăng xuất không?");
+    }
+</script>
 
 </html>

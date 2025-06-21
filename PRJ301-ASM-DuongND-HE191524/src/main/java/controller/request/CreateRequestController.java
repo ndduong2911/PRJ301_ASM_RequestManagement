@@ -20,7 +20,7 @@ public class CreateRequestController extends HttpServlet {
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
-            resp.sendRedirect(req.getContextPath() + "/view/authentication/login.jsp");  // ✅ updated
+            resp.sendRedirect(req.getContextPath() + "/view/authentication/login.jsp");  
             return;
         }
 

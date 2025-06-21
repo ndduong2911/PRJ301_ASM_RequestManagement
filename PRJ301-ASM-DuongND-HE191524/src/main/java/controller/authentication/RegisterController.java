@@ -1,5 +1,10 @@
 package controller.authentication;
 
+import model.User;
+import dal.UserDAO;
+import dal.DivisionDAO;
+import dal.UserRoleDAO;
+import dal.RoleDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -8,8 +13,6 @@ import java.security.MessageDigest;
 import java.sql.Connection;
 import java.util.List;
 
-import dal.*;
-import model.*;
 import util.DBContext;
 
 @WebServlet("/register")

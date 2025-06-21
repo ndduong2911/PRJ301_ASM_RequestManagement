@@ -58,7 +58,7 @@
         <div class="login-box">
             <h4 class="text-center mb-4">Đăng nhập</h4>
 
-<form action="<%= request.getContextPath() %>/login" method="post">
+            <form action="<%= request.getContextPath() %>/login" method="post">
                 <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required />
                 <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required />
                 <button type="submit" class="btn-gradient">Đăng nhập</button>
@@ -68,7 +68,12 @@
             <% if (error != null) { %>
             <div class="alert alert-danger text-center mt-3"><%= error %></div>
             <% } %>
-
+            
+            <!-- comment<div style="margin-top: 10px;">
+    <a href="login-google">
+        <button type="button">Login with Google</button>
+    </a>
+</div> -->
             <div class="text-link">
                 <a href="<%= request.getContextPath() %>/register">Chưa có tài khoản? Đăng ký ngay</a>
             </div>
